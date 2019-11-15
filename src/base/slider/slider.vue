@@ -103,6 +103,9 @@ export default {
         this.slider.next()
       }, this.interval)
     }
+  },
+  destroyed() {
+    clearTimeout(this.timer)
   }
 }
 </script>
