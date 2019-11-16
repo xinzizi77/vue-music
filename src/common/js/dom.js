@@ -1,15 +1,15 @@
 export function addClass(el, className) {
   if (hasClass(el, className)) {
-    return
+    return;
   }
-  let newClass = el.className.split(' ')
+  let newClass = el.className.split(' ');
 
-  newClass.push(className)
-  el.className = newClass.join(' ')
+  newClass.push(className);
+  el.className = newClass.join(' ');
 }
 
 export function hasClass(el, className) {
-  let reg = new RegExp('(^|\\s)' + className + '(\\s|$)')
+  let reg = new RegExp('(^|\\s)' + className + '(\\s|$)');
 
-  return reg.test(el.className)
+  return reg.test(el.className);
 }

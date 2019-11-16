@@ -1,10 +1,10 @@
 <template>
-    <div ref="wrapper">
-        <slot></slot>
-    </div>
+  <div ref="wrapper">
+    <slot></slot>
+  </div>
 </template>
 <script>
-import BScroll from 'better-scroll'
+import BScroll from 'better-scroll';
 
 export default {
   props: {
@@ -23,37 +23,36 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      this._initScroll()
-    }, 20)
+      this._initScroll();
+    }, 20);
   },
   methods: {
     _initScroll() {
       if (!this.$refs.wrapper) {
-        return
+        return;
       }
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
         click: this.click
-      })
+      });
     },
     enable() {
-      this.scroll && this.scroll.enable()
+      this.scroll && this.scroll.enable();
     },
     disable() {
-      this.scroll && this.scroll.disable()
+      this.scroll && this.scroll.disable();
     },
     refresh() {
-      this.scroll && this.scroll.refresh()
+      this.scroll && this.scroll.refresh();
     }
   },
   watch: {
     data() {
       setTimeout(() => {
-        this.refresh()
-      }, 20)
+        this.refresh();
+      }, 20);
     }
   }
-}
+};
 </script>
-<style lang="stylus" scoped>
-</style>
+<style lang="stylus" scoped></style>
