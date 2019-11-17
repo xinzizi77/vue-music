@@ -1,12 +1,14 @@
 <template>
     <div class="singer">
-        歌手页
+        <list-view :data='singerList'></list-view>
     </div>
 </template>
 <script>
 import {getSingerList} from 'api/singers';
 import {ERR_OK} from 'api/config';
 import Singer from 'common/js/singer';
+
+import ListView from 'base/listview/listview';
 
 const HOT_NAME = '热门';
 const HOT_SINGER_LEN = 10;
@@ -24,8 +26,7 @@ export default {
     _getSingerList() {
       getSingerList().then((res) => {
         if (res.code === ERR_OK) {
-          this.singerList = res.data.list;
-          this._normalizeSinger(this.singerList);
+          this.singerList = this._normalizeSinger(res.data.list);
         }
       });
     },
@@ -70,8 +71,11 @@ export default {
       ret.sort((a, b) => {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0);
       });
-      console.log(hot.concat(ret));
+      return hot.concat(ret);
     }
+  },
+  components: {
+    ListView
   }
 };
 </script>
@@ -80,5 +84,5 @@ export default {
     position: fixed;
     top: 88px;
     bottom: 0;
-    widthL 100%
+    width: 100%
 </style>

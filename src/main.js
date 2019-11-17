@@ -10,7 +10,8 @@ import VueLazyLoad from 'vue-lazyload';
 
 fastclick.attach(document.body);
 Vue.use(VueLazyLoad, {
-  loading: require('common/image/default.png')
+  loading: require('common/image/default.png'),
+  error: require('common/image/default.png')
 });
 
 Vue.config.productionTip = false;
