@@ -1,0 +1,1 @@
+export const SER_SINGER = 'SET_SINGER';
