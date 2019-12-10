@@ -6,9 +6,9 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper" ref="play">
-        <div class="play"  v-show= "songs.length>0">
+        <div class="play"  v-show= "songs.length>0" @click="random">
           <i class="icon-play"></i>
-          <span class="text">随机播放全部</span>
+          <span class="text"  >随机播放全部</span>
         </div>
       </div>
       <div class="filter"></div>
@@ -30,11 +30,13 @@ import SongList from 'base/song-list/song-list';
 import {prefixStyle} from 'common/js/dom';
 import Loading from 'base/loading/loading';
 import {mapActions} from 'vuex';
+import {playlistMixin} from 'common/js/mixin';
 
 const RESERVED_HEIGHT = 40;
 const transform = prefixStyle('transform');
 
 export default {
+  mixins: [playlistMixin],
   props: {
     bgImage: {
       type: String,
@@ -69,6 +71,11 @@ export default {
     this.$refs.list.$el.style.top = `${this.imageHeight}px`;
   },
   methods: {
+    handlePlayList(playList) {
+      const bottom = playList.length > 0 ? '60px' : '';
+      this.$refs.list.$el.style.bottom = bottom;
+      this.$refs.list.refresh();
+    },
     scroll(pos) {
       this.scrollY = pos.y;
     },
@@ -76,13 +83,21 @@ export default {
       this.$router.back();
     },
     selectItem(item, index) {
+      const songList = this.songs.slice();
       this.selectPlay({
-        list: this.songs,
+        list: songList,
         index
       });
     },
+    random() {
+      const songList = this.songs.slice();
+      this.randomPlay({
+        list: songList
+      });
+    },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   },
   watch: {
