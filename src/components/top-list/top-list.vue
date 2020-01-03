@@ -1,59 +1,66 @@
 <template>
   <transition name="slide">
-      <music-list :songs= 'songs' :title= 'title' :bg-image= 'bgImage'></music-list>
+    <musicList :title="title" :bg-image="bgImage" :songs="songs" :rank="rank"></musicList>
   </transition>
 </template>
 <script>
-import {mapGetters} from 'vuex';
-import {getSingerDetail} from 'api/singers';
-import {ERR_OK} from 'api/config';
-import {createSong} from 'common/js/song';
-import {getMusic} from 'api/song';
 import MusicList from 'components/music-list/music-list';
+
+import {mapGetters} from 'vuex';
+
+import {getMusicList} from 'api/rank';
+import {ERR_OK} from 'api/config';
+import {getMusic} from 'api/song';
+
+import {createSong} from 'common/js/song';
 
 export default {
   data() {
     return {
-      songs: []
+      songs: [],
+      rank: true
     };
   },
   computed: {
     title() {
-      return this.singer.name;
+      return this.topList.topTitle;
     },
     bgImage() {
-      return this.singer.avatar;
+      if (this.songs.length) {
+        return this.songs[0].image;
+      }
+      return '';
     },
     ...mapGetters([
-      'singer'
+      'topList'
     ])
   },
   created() {
-    this._getDetail();
+    this._getMusicList();
   },
   methods: {
-    _getDetail() {
-      if (!this.singer.id) {
-        this.$router.push('/singer');
+    _getMusicList() {
+      if (!this.topList.id) {
+        this.$router.push('/rank');
         return;
       }
-      getSingerDetail(this.singer.id).then(res => {
+      getMusicList(this.topList.id).then(res => {
         if (res.code === ERR_OK) {
-          this.songs = this._normalizeSongs(res.data.list);
+          this.songs = this._normalizeSongs(res.songlist);
+          console.log(this.songs);
         }
       });
     },
     _normalizeSongs(list) {
       let ret = [];
       list.forEach(item => {
-        let {musicData} = item;
+        const musicData = item.data;
         if (musicData.songid && musicData.albummid) {
           getMusic(musicData.songmid).then(res => {
             if (res.code === ERR_OK) {
               const svkey = res.data.items;
               const songVkey = svkey[0].vkey;
               const newSong = createSong(musicData, songVkey);
-
               ret.push(newSong);
             }
           });
@@ -67,10 +74,9 @@ export default {
   }
 };
 </script>
-<style lang="stylus" scoped rel="stylesheet/stylus">
-  .slide-enter-active, .slide-leave-active
-    transition: all 0.3s;
-
-  .slide-enter, .slide-leave-to
-    transform: translate3d(100%, 0, 0);
+<style lang="stylus" scoped>
+  .slide-enter-active, . slide-leave-activce
+    transition: all 0.3s ease;
+  .slide-enter, .slide-leave-top
+    transform: translate3d(100%, 0, 0)
 </style>

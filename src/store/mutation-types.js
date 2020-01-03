@@ -13,3 +13,7 @@ export const SET_PLAT_MODE = 'SET_PLAY_MODE';
 export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX';
 
 export const SET_DISC = 'SET_DISC';
+
+export const SET_TOP_LIST = 'SET_TOP_LIST';
+
+export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY';

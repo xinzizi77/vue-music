@@ -128,6 +128,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       });
+
+      apiRoutes.get('/api/getSearch', (req, res) => {
+        var url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+        axios.get(url, {
+          headers: {
+            referer: 'https://y.qq.com/m/index.html',
+            host: 'c.y.qq.com'
+          },
+          params: req.query // 通过req从浏览器端发过来的一堆参数(platform，sin，ein等)透传给qq的服务端
+        }).then((response)=>{ // qq服务端的响应数据，再通过res将响应数据输出到浏览器端
+          res.json(response.data)
+        }).catch((error)=>{
+          console.log(error)
+        })
+      });
     }
   },
   plugins: [

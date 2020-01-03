@@ -24,6 +24,12 @@ const mutations = {
   },
   [types.SET_DISC](state, list) {
     state.disc = list;
+  },
+  [types.SET_TOP_LIST](state, list) {
+    state.topList = list;
+  },
+  [types.SET_SEARCH_HISTORY](state, list) {
+    state.searchHistory = list;
   }
 };
 
