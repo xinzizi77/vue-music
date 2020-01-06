@@ -88,29 +88,35 @@
           <i :class= "miniIcon" @click.stop= "togglePlaying" class="icon-mini"></i>
         </progress-circle>
       </div>
-      <div class="control">
+      <div class="control" @click.stop="showPlayList">
         <i class="icon-playlist"></i>
       </div>
     </div>
     </transition>
+    <play-list ref="playList"></play-list>
     <audio :src= "currentSong.url" ref="audio" @canplay= "ready" @error= "error" @timeupdate= "updateTime" @ended="end"></audio>
   </div>
 </template>
 <script>
-import {mapGetters, mapMutations} from 'vuex';
-import animations from 'create-keyframe-animation';
 import {prefixStyle} from 'common/js/dom';
+import {playMode} from 'common/js/config';
+import {playerMixin} from 'common/js/mixin';
+
 import ProgressBar from 'base/progress-bar/progress-bar';
 import ProgressCircle from 'base/progress-circle/progress-circle';
-import {playMode} from 'common/js/config';
-import {shuffle} from 'common/js/util';
-import Lyric from 'lyric-parser';
 import Scroll from 'base/scroll/scroll';
+
+import {mapGetters, mapMutations, mapActions} from 'vuex';
+import animations from 'create-keyframe-animation';
+import Lyric from 'lyric-parser';
+
+import PlayList from 'components/playlist/playlist';
 
 const transform = prefixStyle('transform');
 const transitionDuration = prefixStyle('transitionDuration');
 
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       songRedy: false,
@@ -132,9 +138,6 @@ export default {
     miniIcon() {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini';
     },
-    iconMode() {
-      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random';
-    },
     disableCls() {
       return this.songRedy ? '' : 'disable';
     },
@@ -143,12 +146,8 @@ export default {
     },
     ...mapGetters([
       'fullScreen',
-      'playList',
-      'currentSong',
       'playing',
-      'currentIndex',
-      'mode',
-      'sequenceList'
+      'currentIndex'
     ])
   },
   created() {
@@ -217,12 +216,11 @@ export default {
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setSequenceList: 'SET_SEQUENCE_LIST',
-      setplayList: 'SET_PLAYLIST'
+      setSequenceList: 'SET_SEQUENCE_LIST'
     }),
+    ...mapActions([
+      'savePlayHistory'
+    ]),
     togglePlaying() {
       if (!this.songRedy) return;
       this.setPlayingState(!this.playing);
@@ -278,6 +276,7 @@ export default {
     },
     ready() {
       this.songRedy = true;
+      this.savePlayHistory(this.currentSong);
     },
     error() {
       this.songRedy = true;
@@ -297,25 +296,6 @@ export default {
       this.$refs.audio.currentTime = currentTime;
       if (!this.playing) this.togglePlaying();
       if (this.currentLyric) this.currentLyric.seek(currentTime * 1000);
-    },
-    changeMode() {
-      const mode = (this.mode + 1) % 3;
-      this.setPlayMode(mode);
-      let list = null;
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList);
-      } else {
-        const seqList = this.sequenceList.slice();
-        list = seqList;
-      }
-      this.resetCurrentIndex(list);
-      this.setplayList(list);
-    },
-    resetCurrentIndex(list) {
-      let index = list.findIndex((item) => {
-        return item.id === this.currentSong.id;
-      });
-      this.setCurrentIndex(index);
     },
     getLyric() {
       this.currentSong.getLyric().then(lyric => {
@@ -393,6 +373,9 @@ export default {
       this.$refs.middleL.style.opacity = opacity;
       this.$refs.middleL.style[transitionDuration] = `${time}ms`;
     },
+    showPlayList() {
+      this.$refs.playList.show();
+    },
     _pad(num, n = 2) {
       let len = num.toString().length;
 
@@ -405,7 +388,7 @@ export default {
   },
   watch: {
     currentSong(newSong, oldSong) {
-      if (newSong.id === oldSong.id) return;
+      if (newSong.id === oldSong.id || !newSong.id) return;
 
       if (this.currentLyric) this.currentLyric.stop();
 
@@ -427,7 +410,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    PlayList
   }
 };
 </script>
