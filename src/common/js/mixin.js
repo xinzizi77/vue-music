@@ -62,7 +62,8 @@ export const playerMixin = {
       setPlayMode: 'SET_PLAY_MODE',
       setplayList: 'SET_PLAYLIST',
       setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayingState: 'SET_PLAYING_STATE'
+      setPlayingState: 'SET_PLAYING_STATE',
+      setPlayState: 'SET_PLAYING_STATE'
     })
   }
 };
@@ -70,7 +71,8 @@ export const playerMixin = {
 export const searchMixin = {
   data() {
     return {
-      query: ''
+      query: '',
+      refreshDelay: 100
     };
   },
   computed: {
